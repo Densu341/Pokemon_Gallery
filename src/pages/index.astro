@@ -1,0 +1,46 @@
+---
+import MainLayout from "../layout/MainLayout.astro";
+import { Image } from "astro:assets";
+
+const res = await fetch(import.meta.env.PUBLIC_API_URL + "?limit=10");
+const { results } = await res.json();
+
+const BASE_POKEMON_IMAGE_URL = import.meta.env.PUBLIC_IMG_URL;
+
+function getPokemonImageUrl(pokemon: { url: string }) {
+  return `${BASE_POKEMON_IMAGE_URL}${pokemon.url.slice(34).replace("/", "")}.png`;
+}
+---
+
+<MainLayout title="Home">
+  <section class="grid grid-cols-5 gap-4">
+    {
+      results.map((pokemon) => (
+        <a href={`/pokedex/${pokemon.name}`}>
+          <div class="bg-slate-100 rounded-md transition-transform duration-200 ease-in-out hover:translate-y-2">
+            <figure class="block w-full">
+              <Image
+                src={getPokemonImageUrl(pokemon)}
+                alt="pokemon"
+                width={200}
+                height={200}
+                class="mx-auto"
+              />
+            </figure>
+          </div>
+          <div class="text-center py-4">
+            <p class="text-lg font-bold">{pokemon.name}</p>
+          </div>
+        </a>
+      ))
+    }
+  </section>
+  <div class="text-center mt-8">
+    <a
+      href="/pokedex"
+      class="inline-block bg-orange-600 text-white px-4 py-2 hover:bg-orange-700 rounded-md"
+    >
+      Load More
+    </a>
+  </div>
+</MainLayout>
